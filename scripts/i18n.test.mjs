@@ -7,6 +7,7 @@ import {
   nativeLabel,
   pickerOptionsFor,
   selectLocale,
+  captureDefaultMap,
 } from '../assets/i18n.mjs';
 
 function stubNode(key, text = '') {
@@ -34,6 +35,15 @@ test('pickerOptionsFor: returns one option per supported locale, preserving orde
     { value: 'en', label: 'English' },
     { value: 'th', label: 'ไทย' },
   ]);
+});
+
+test('captureDefaultMap: snapshots textContent of every tagged node keyed by data-i18n', () => {
+  const nodes = [stubNode('hero.title', 'How to use these skills'), stubNode('title.text', 'Daily Dev Guide')];
+  const map = captureDefaultMap(stubRoot(nodes));
+  assert.deepEqual(map, {
+    'hero.title': 'How to use these skills',
+    'title.text': 'Daily Dev Guide',
+  });
 });
 
 function makeSelectLocaleDeps() {

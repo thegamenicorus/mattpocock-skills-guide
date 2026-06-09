@@ -6,6 +6,14 @@ export function extractKeysFromHtml(htmlString) {
   return keys;
 }
 
+export function captureDefaultMap(root) {
+  const map = {};
+  for (const node of root.querySelectorAll('[data-i18n]')) {
+    map[node.getAttribute('data-i18n')] = node.textContent;
+  }
+  return map;
+}
+
 export function applyTranslations(root, map, { debug = false, locale = '' } = {}) {
   for (const node of root.querySelectorAll('[data-i18n]')) {
     const key = node.getAttribute('data-i18n');
@@ -55,15 +63,18 @@ export function selectLocale(locale, deps) {
   deps.setLocaleFn(locale);
 }
 
+let defaultMap = null;
+
 export async function setLocale(locale) {
   if (!SUPPORTED.includes(locale)) locale = SUPPORTED[0];
+  if (defaultMap === null) defaultMap = captureDefaultMap(document);
   const debug = new URL(location.href).searchParams.get('debug') === '1';
-  if (locale !== SUPPORTED[0]) {
-    const res = await fetch(`i18n/${locale}.json`, { cache: 'no-cache' });
-    const map = await res.json();
-    applyTranslations(document, map, { debug, locale });
-    if (map['title.text']) document.title = map['title.text'];
-  }
+  const map =
+    locale === SUPPORTED[0]
+      ? defaultMap
+      : await fetch(`i18n/${locale}.json`, { cache: 'no-cache' }).then((r) => r.json());
+  applyTranslations(document, map, { debug, locale });
+  if (map['title.text']) document.title = map['title.text'];
   document.documentElement.lang = locale;
   document.documentElement.classList.remove('i18n-loading-root');
 }
