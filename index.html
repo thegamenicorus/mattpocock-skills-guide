@@ -7,6 +7,14 @@
     <script>
       (function () {
         try {
+          var root = document.documentElement;
+          // file:// can't load ES modules or fetch JSON in most browsers, so
+          // the i18n runtime won't run. Tag the doc so CSS hides the picker
+          // and skip the hide-flash logic — English is the inline content.
+          if (location.protocol === 'file:') {
+            root.classList.add('no-i18n');
+            return;
+          }
           var url = new URL(location.href);
           var supported = ['en', 'th'];
           var pick =
@@ -14,15 +22,7 @@
             localStorage.getItem('locale') ||
             (navigator.language || '').split('-')[0].toLowerCase();
           if (supported.indexOf(pick) > 0) {
-            var root = document.documentElement;
             root.classList.add('i18n-loading-root');
-            // Safety net: if the i18n module fails to load (e.g. opened via
-            // file://, which blocks ES modules in most browsers), reveal the
-            // page after 3s so the user sees the English fallback instead of
-            // a permanently blank screen.
-            setTimeout(function () {
-              root.classList.remove('i18n-loading-root');
-            }, 3000);
           }
         } catch (e) {}
       })();
@@ -32,6 +32,9 @@
       html.i18n-loading-root,
       html.i18n-loading-root body {
         visibility: hidden;
+      }
+      html.no-i18n .lang-picker-label {
+        display: none;
       }
     </style>
     <style>
@@ -187,6 +190,10 @@
       }
 
       .lang-picker-label {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 20;
         display: inline-flex;
         align-items: center;
       }
@@ -198,10 +205,11 @@
         border-radius: 999px;
         border: 1px solid rgba(92, 85, 79, 0.14);
         background:
-          rgba(31, 26, 23, 0.04)
+          color-mix(in srgb, var(--paper) 92%, white 8%)
             url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='%231f1a17'><path d='M6 8 0 0h12z'/></svg>")
             no-repeat right 12px center;
         background-size: 10px 7px;
+        box-shadow: var(--shadow);
         font: inherit;
         font-weight: 700;
         color: var(--ink);
@@ -670,6 +678,10 @@
     </style>
   </head>
   <body>
+    <label class="lang-picker-label" for="lang-picker">
+      <span class="visually-hidden" data-i18n="picker.label">Language</span>
+      <select id="lang-picker" class="lang-picker"></select>
+    </label>
     <div class="page">
       <section class="hero">
         <div class="hero-grid">
@@ -711,10 +723,6 @@
                 rel="noreferrer"
                 >Skill Reference</a
               >
-              <label class="lang-picker-label" for="lang-picker">
-                <span class="visually-hidden" data-i18n="picker.label">Language</span>
-                <select id="lang-picker" class="lang-picker"></select>
-              </label>
             </div>
           </div>
           <div class="hero-card">
