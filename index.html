@@ -186,6 +186,45 @@
         flex: 0 0 auto;
       }
 
+      .lang-picker-label {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .lang-picker {
+        appearance: none;
+        -webkit-appearance: none;
+        padding: 10px 32px 10px 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(92, 85, 79, 0.14);
+        background:
+          rgba(31, 26, 23, 0.04)
+            url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='%231f1a17'><path d='M6 8 0 0h12z'/></svg>")
+            no-repeat right 12px center;
+        background-size: 10px 7px;
+        font: inherit;
+        font-weight: 700;
+        color: var(--ink);
+        cursor: pointer;
+      }
+
+      .lang-picker:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
       .hero-grid {
         display: grid;
         grid-template-columns: 1.5fr 1fr;
@@ -672,6 +711,10 @@
                 rel="noreferrer"
                 >Skill Reference</a
               >
+              <label class="lang-picker-label" for="lang-picker">
+                <span class="visually-hidden" data-i18n="picker.label">Language</span>
+                <select id="lang-picker" class="lang-picker"></select>
+              </label>
             </div>
           </div>
           <div class="hero-card">
