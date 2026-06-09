@@ -420,6 +420,21 @@
         border: 1px solid rgba(0, 0, 0, 0.15);
       }
 
+      .prompt-lang-note {
+        margin: 0 0 10px;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        color: #f8f2e9;
+        background: rgba(243, 191, 91, 0.12);
+        border-left: 3px solid #f3bf5b;
+        border-radius: 10px;
+      }
+
+      html[lang="en"] .prompt-lang-note {
+        display: none;
+      }
+
       .install-path {
         margin-top: 20px;
         padding: 18px;
@@ -937,6 +952,7 @@ ls .claude/skills</pre
                       Copy
                     </button>
                   </div>
+                  <p class="prompt-lang-note" data-i18n="prompt.note"></p>
                   <pre id="setup-prompt">
 Install Matt Pocock's skills with `npx skills@latest add mattpocock/skills`, make sure /setup-matt-pocock-skills is available, then run /setup-matt-pocock-skills for this repository.</pre
                   >
@@ -1025,6 +1041,7 @@ Install Matt Pocock's skills with `npx skills@latest add mattpocock/skills`, mak
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="feature-prompt">
 We need saved drafts for long support replies. Use /grill-with-docs to challenge the idea against existing inbox rules. When the shape is clear, run /to-prd, then /to-issues, then build the first AFK slice with /tdd.</pre
               >
@@ -1042,6 +1059,7 @@ We need saved drafts for long support replies. Use /grill-with-docs to challenge
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="feature-template">
 {your feature idea or product change}
 Use /grill-with-docs to challenge the idea against the existing repo rules, domain language, and ADRs. When the shape is clear, run /to-prd, then /to-issues, then build the first AFK slice with /tdd.</pre
@@ -1106,6 +1124,7 @@ Use /grill-with-docs to challenge the idea against the existing repo rules, doma
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="bug-prompt">
 Customers sometimes hit a timeout on checkout after entering a promo code. Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch to /tdd, add a failing regression test, fix it, and keep the change minimal.</pre
               >
@@ -1123,6 +1142,7 @@ Customers sometimes hit a timeout on checkout after entering a promo code. Use /
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="bug-template">
 {your problem}
 Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch to /tdd, add a failing regression test, fix it, and keep the change minimal.</pre
@@ -1220,6 +1240,7 @@ Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="project-prompt">
 I want an internal approvals dashboard, but the scope is fuzzy. Start with /grill-me. When we know the riskiest assumption, use /prototype. If the concept holds up, create the PRD and issues. Then take the first AFK-ready issue, implement it with /tdd, and continue issue by issue until the dashboard is usable end to end.</pre
               >
@@ -1237,6 +1258,7 @@ I want an internal approvals dashboard, but the scope is fuzzy. Start with /gril
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="project-template">
 {your project idea, product concept, or internal tool idea}
 Start with /grill-me. When we know the riskiest assumption, use /prototype. If the concept holds up, create the PRD and issues. Then take the first AFK-ready issue, implement it with /tdd, and continue issue by issue until the project works end to end.</pre
@@ -1306,6 +1328,7 @@ Start with /grill-me. When we know the riskiest assumption, use /prototype. If t
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="legacy-prompt">
 I just inherited this service and need to add a new endpoint. Use /improve-codebase-architecture to map the muddiest seams, then /grill-with-docs to seed CONTEXT.md with the domain language you find. After that, use /zoom-out on the area I'll touch first, then switch into the normal feature flow.</pre
               >
@@ -1323,6 +1346,7 @@ I just inherited this service and need to add a new endpoint. Use /improve-codeb
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="legacy-template">
 {the inherited service, legacy module, or unfamiliar repo you need to change}
 Use /improve-codebase-architecture to map the muddiest seams, then /grill-with-docs to seed or extend CONTEXT.md with the domain language you find. After that, use /zoom-out on the area I'll touch first, then switch into the normal feature or bug flow.</pre
@@ -1384,6 +1408,7 @@ Use /improve-codebase-architecture to map the muddiest seams, then /grill-with-d
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="poc-prompt">
 We are unsure whether onboarding should feel like a wizard or a checklist. Use /prototype to create two radically different UI variants on one route. Keep it throwaway and capture the decision signal we learn from it.</pre
               >
@@ -1401,6 +1426,7 @@ We are unsure whether onboarding should feel like a wizard or a checklist. Use /
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="poc-template">
 {your design question or risky assumption}
 Use /prototype to create a throwaway prototype that answers the question quickly. If this is a UI question, create multiple radically different variants on one route. Keep it throwaway and capture the decision signal we learn from it.</pre
@@ -1470,6 +1496,7 @@ Use /prototype to create a throwaway prototype that answers the question quickly
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="testing-prompt">
 Use /tdd for this feature. Confirm the public interface and the highest-value behaviors first, then implement one tracer-bullet behavior at a time with integration-style tests.</pre
               >
@@ -1487,6 +1514,7 @@ Use /tdd for this feature. Confirm the public interface and the highest-value be
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="testing-template">
 {your feature, fix, or behavior change}
 Use /tdd. Confirm the public interface and the highest-value behaviors first, then implement one tracer-bullet behavior at a time with integration-style tests.</pre
@@ -1542,6 +1570,7 @@ Use /tdd. Confirm the public interface and the highest-value behaviors first, th
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="quickdev-prompts">
 /zoom-out this auth flow before we change it
 
@@ -1563,6 +1592,7 @@ Use /tdd. Confirm the public interface and the highest-value behaviors first, th
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="quickdev-templates">
 {unfamiliar code area}
 /zoom-out this before we change it
@@ -1644,6 +1674,7 @@ Use /tdd. Confirm the public interface and the highest-value behaviors first, th
                   Copy
                 </button>
               </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="maintenance-templates">
 {codebase area getting muddy, shallow, or hard to change}
 Use /improve-codebase-architecture to find the highest-leverage deepening opportunities in this area.

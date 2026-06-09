@@ -2,6 +2,7 @@
   "title.text": "Matt Pocock Skills: คู่มือ Dev ประจำวัน",
   "picker.label": "ภาษา",
   "common.copy": "คัดลอก",
+  "prompt.note": "เทมเพลตด้านล่างเป็นภาษาอังกฤษ เพราะสกิลถูกออกแบบมาให้ตอบเป็นภาษาอังกฤษได้ดีที่สุด — คัดลอกไปใช้ตามเดิมได้เลย",
   "common.examplePrompt": "พรอมต์ตัวอย่าง",
   "common.examplePrompts": "พรอมต์ตัวอย่างทั้งหมด",
   "common.template": "เทมเพลต",
