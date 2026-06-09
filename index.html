@@ -343,6 +343,36 @@
         border: 1px solid rgba(0, 0, 0, 0.15);
       }
 
+      .install-path {
+        margin-top: 20px;
+        padding: 18px;
+        border: 1px dashed rgba(92, 85, 79, 0.28);
+        border-radius: 18px;
+        background: rgba(255, 253, 248, 0.55);
+      }
+
+      .install-path > h4 {
+        margin: 0 0 4px;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      .install-path > h4 .path-meta {
+        margin-left: 10px;
+        color: var(--muted);
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        text-transform: none;
+      }
+
+      .install-path > p {
+        margin: 0 0 4px;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
       .prompt-head {
         display: flex;
         align-items: center;
@@ -740,36 +770,100 @@
                 language and architecture.
               </div>
 
-              <div class="prompt">
-                <div class="prompt-head">
-                  <span class="label">Install command</span>
-                  <button
-                    class="copy-btn"
-                    type="button"
-                    data-copy-target="install-command"
-                  >
-                    Copy
-                  </button>
-                </div>
-                <pre id="install-command">
-npx skills@latest add mattpocock/skills</pre
-                >
+              <div class="callout">
+                <strong>Missing symlink after install?</strong> The installer
+                drops everything into <code>.agents/</code> (with
+                <code>skills/</code> inside), but Claude Code only looks at
+                <code>.claude/</code>. The fix is a single
+                directory-level symlink: <code>.claude → .agents</code>, so
+                opening <code>.claude</code> shows the same
+                <code>skills/</code> folder. On fresh repos that link
+                sometimes doesn’t get created, so
+                <code>/setup-matt-pocock-skills</code> and friends are
+                silently missing. Verify with <code>ls -la .claude</code> —
+                if it isn’t a symlink to <code>.agents</code>, create it
+                manually and restart Claude Code so the registry reloads.
               </div>
 
-              <div class="prompt">
-                <div class="prompt-head">
-                  <span class="label">Paste into your agent</span>
-                  <button
-                    class="copy-btn"
-                    type="button"
-                    data-copy-target="setup-prompt"
+              <div class="install-path">
+                <h4>
+                  Option A · Manual install
+                  <span class="path-meta">run in your shell</span>
+                </h4>
+                <p>
+                  Install the pack yourself, then make sure the
+                  <code>.claude → .agents</code> symlink is in place so Claude
+                  Code can see the skills.
+                </p>
+
+                <div class="prompt">
+                  <div class="prompt-head">
+                    <span class="label">1. Install command</span>
+                    <button
+                      class="copy-btn"
+                      type="button"
+                      data-copy-target="install-command"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <pre id="install-command">
+npx skills@latest add mattpocock/skills</pre
                   >
-                    Copy
-                  </button>
                 </div>
-                <pre id="setup-prompt">
-Install Matt Pocock's skills, make sure /setup-matt-pocock-skills is available, then run /setup-matt-pocock-skills for this repository.</pre
-                >
+
+                <div class="prompt">
+                  <div class="prompt-head">
+                    <span class="label">2. Verify &amp; repair symlink</span>
+                    <button
+                      class="copy-btn"
+                      type="button"
+                      data-copy-target="symlink-fix"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <pre id="symlink-fix">
+[ -e .claude ] || ln -s .agents .claude
+ls -la .claude
+ls .claude/skills</pre
+                  >
+                </div>
+              </div>
+
+              <div class="install-path">
+                <h4>
+                  Option B · Install by prompt
+                  <span class="path-meta">paste into Claude Code</span>
+                </h4>
+                <p>
+                  Prefer to let the agent drive? Paste this in and it will
+                  install the pack, fix the symlink if needed, then run setup
+                  with you.
+                </p>
+
+                <div class="prompt">
+                  <div class="prompt-head">
+                    <span class="label">Paste into your agent</span>
+                    <button
+                      class="copy-btn"
+                      type="button"
+                      data-copy-target="setup-prompt"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                  <pre id="setup-prompt">
+Install Matt Pocock's skills with `npx skills@latest add mattpocock/skills`.
+
+The pack installs into `.agents/` (with `skills/` inside), but Claude Code only reads from `.claude/`. Wire them together before running setup:
+  1. Run `ls -la .claude` and confirm `.claude` is a symlink pointing at `.agents` (so `.claude/skills` resolves into `.agents/skills`).
+  2. If `.claude` is missing or isn't a symlink, create it: `ln -s .agents .claude`.
+  3. Restart Claude Code so the skill registry reloads, then confirm `/setup-matt-pocock-skills` shows up as an available slash command.
+
+Once it's available, run `/setup-matt-pocock-skills` for this repository and walk me through the prompts (issue tracker, triage labels, single vs. multi-domain).</pre
+                  >
+                </div>
               </div>
             </div>
           </section>
