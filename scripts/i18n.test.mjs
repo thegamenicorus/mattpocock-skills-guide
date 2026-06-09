@@ -81,6 +81,16 @@ test('installFontFor: sets --sans CSS variable to start with the locale font fam
   assert.match(doc.cssVars['--sans'], /^"Noto Sans Thai"/);
 });
 
+test('installFontFor: re-applies --sans even when the <link> is already present (idempotent install, fresh CSS var)', () => {
+  const doc = stubDoc();
+  installFontFor('th', doc);
+  // Simulate setLocale resetting --sans during a switch to the default locale.
+  doc.cssVars['--sans'] = 'BASE STACK';
+  installFontFor('th', doc);
+  assert.equal(doc.head.children.length, 1, 'link should still be idempotent');
+  assert.match(doc.cssVars['--sans'], /^"Noto Sans Thai"/, '--sans must be re-set');
+});
+
 test('installFontFor: is a no-op for locales without a font config ("en")', () => {
   const doc = stubDoc();
   installFontFor('en', doc);

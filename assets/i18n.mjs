@@ -61,12 +61,16 @@ export function installFontFor(locale, doc) {
   const cfg = fontConfigFor(locale);
   if (!cfg) return;
   const id = `i18n-font-${locale}`;
-  if (doc.getElementById(id)) return;
-  const link = doc.createElement('link');
-  link.id = id;
-  link.setAttribute('rel', 'stylesheet');
-  link.setAttribute('href', cfg.href);
-  doc.head.appendChild(link);
+  if (!doc.getElementById(id)) {
+    const link = doc.createElement('link');
+    link.id = id;
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', cfg.href);
+    doc.head.appendChild(link);
+  }
+  // Always re-apply --sans, even when the <link> is already present:
+  // switching to the default locale resets --sans to the base stack, so
+  // switching back must re-prefix the locale font or text falls back.
   doc.documentElement.style.setProperty('--sans', `"${cfg.family}", ${BASE_SANS}`);
 }
 
