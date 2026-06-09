@@ -1,6 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveLocale, applyTranslations, extractKeysFromHtml } from '../assets/i18n.mjs';
+import {
+  resolveLocale,
+  applyTranslations,
+  extractKeysFromHtml,
+  nativeLabel,
+  pickerOptionsFor,
+  selectLocale,
+  captureDefaultMap,
+} from '../assets/i18n.mjs';
 
 function stubNode(key, text = '') {
   const node = {
@@ -13,6 +21,77 @@ function stubNode(key, text = '') {
 function stubRoot(nodes) {
   return { querySelectorAll: () => nodes };
 }
+
+test('nativeLabel: returns the native-language name for a known locale', () => {
+  assert.equal(nativeLabel('en'), 'English');
+});
+
+test('nativeLabel: falls back to the locale code for an unknown locale', () => {
+  assert.equal(nativeLabel('xx'), 'xx');
+});
+
+test('pickerOptionsFor: returns one option per supported locale, preserving order, with native labels', () => {
+  assert.deepEqual(pickerOptionsFor(['en', 'th']), [
+    { value: 'en', label: 'English' },
+    { value: 'th', label: 'ไทย' },
+  ]);
+});
+
+test('captureDefaultMap: snapshots textContent of every tagged node keyed by data-i18n', () => {
+  const nodes = [stubNode('hero.title', 'How to use these skills'), stubNode('title.text', 'Daily Dev Guide')];
+  const map = captureDefaultMap(stubRoot(nodes));
+  assert.deepEqual(map, {
+    'hero.title': 'How to use these skills',
+    'title.text': 'Daily Dev Guide',
+  });
+});
+
+function makeSelectLocaleDeps() {
+  const stored = {};
+  const historyCalls = [];
+  const setLocaleCalls = [];
+  return {
+    stored,
+    historyCalls,
+    setLocaleCalls,
+    deps: {
+      url: 'https://example.com/?other=keep',
+      storage: {
+        getItem: (k) => stored[k] ?? null,
+        setItem: (k, v) => {
+          stored[k] = v;
+        },
+      },
+      history: {
+        replaceState: (state, title, url) => historyCalls.push({ state, title, url }),
+      },
+      setLocaleFn: (locale) => {
+        setLocaleCalls.push(locale);
+      },
+    },
+  };
+}
+
+test('selectLocale: persists the chosen locale to storage under "locale"', () => {
+  const { stored, deps } = makeSelectLocaleDeps();
+  selectLocale('th', deps);
+  assert.equal(stored.locale, 'th');
+});
+
+test('selectLocale: replaces the current URL with one carrying ?lang=<locale>, preserving other params', () => {
+  const { historyCalls, deps } = makeSelectLocaleDeps();
+  selectLocale('th', deps);
+  assert.equal(historyCalls.length, 1);
+  const replaced = new URL(historyCalls[0].url, deps.url);
+  assert.equal(replaced.searchParams.get('lang'), 'th');
+  assert.equal(replaced.searchParams.get('other'), 'keep');
+});
+
+test('selectLocale: triggers the page swap by calling setLocaleFn with the chosen locale', () => {
+  const { setLocaleCalls, deps } = makeSelectLocaleDeps();
+  selectLocale('th', deps);
+  assert.deepEqual(setLocaleCalls, ['th']);
+});
 
 test('applyTranslations: writes textContent for a tagged node when key is in map', () => {
   const node = stubNode('hero.title', 'Original English');
