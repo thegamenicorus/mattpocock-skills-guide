@@ -9,7 +9,8 @@ export function extractKeysFromHtml(htmlString) {
 export function captureDefaultMap(root) {
   const map = {};
   for (const node of root.querySelectorAll('[data-i18n]')) {
-    map[node.getAttribute('data-i18n')] = node.textContent;
+    const key = node.getAttribute('data-i18n');
+    map[key] = key.endsWith('.html') ? node.innerHTML : node.textContent;
   }
   return map;
 }
@@ -18,7 +19,11 @@ export function applyTranslations(root, map, { debug = false, locale = '' } = {}
   for (const node of root.querySelectorAll('[data-i18n]')) {
     const key = node.getAttribute('data-i18n');
     if (key in map) {
-      node.textContent = map[key];
+      if (key.endsWith('.html')) {
+        node.innerHTML = map[key];
+      } else {
+        node.textContent = map[key];
+      }
     } else if (debug) {
       node.textContent = `[MISSING:${locale}:${key}]`;
     }

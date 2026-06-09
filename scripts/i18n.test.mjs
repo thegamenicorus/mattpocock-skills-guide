@@ -16,6 +16,7 @@ function stubNode(key, text = '') {
   const node = {
     getAttribute: (n) => (n === 'data-i18n' ? key : null),
     textContent: text,
+    innerHTML: text,
   };
   return node;
 }
@@ -111,6 +112,16 @@ test('captureDefaultMap: snapshots textContent of every tagged node keyed by dat
   });
 });
 
+test('captureDefaultMap: captures innerHTML for keys ending in .html so inline tags survive', () => {
+  const node = {
+    getAttribute: () => 'hero.flow2.html',
+    textContent: 'Run /setup-matt-pocock-skills once per repo.',
+    innerHTML: 'Run <code>/setup-matt-pocock-skills</code> once per repo.',
+  };
+  const map = captureDefaultMap(stubRoot([node]));
+  assert.equal(map['hero.flow2.html'], 'Run <code>/setup-matt-pocock-skills</code> once per repo.');
+});
+
 function makeSelectLocaleDeps() {
   const stored = {};
   const historyCalls = [];
@@ -168,6 +179,12 @@ test('applyTranslations: leaves textContent untouched when key missing (no debug
   const node = stubNode('hero.title', 'Original English');
   applyTranslations(stubRoot([node]), {});
   assert.equal(node.textContent, 'Original English');
+});
+
+test('applyTranslations: keys ending in .html write innerHTML so inline tags survive', () => {
+  const node = stubNode('mentalModel.grill.html', '<strong>Grill</strong>: original');
+  applyTranslations(stubRoot([node]), { 'mentalModel.grill.html': '<strong>กริล</strong>: คำอธิบาย' });
+  assert.equal(node.innerHTML, '<strong>กริล</strong>: คำอธิบาย');
 });
 
 test('applyTranslations: debug mode writes [MISSING:<locale>:<key>] for missing keys', () => {
