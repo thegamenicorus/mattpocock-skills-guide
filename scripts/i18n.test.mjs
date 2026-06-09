@@ -8,6 +8,8 @@ import {
   pickerOptionsFor,
   selectLocale,
   captureDefaultMap,
+  fontConfigFor,
+  installFontFor,
 } from '../assets/i18n.mjs';
 
 function stubNode(key, text = '') {
@@ -21,6 +23,69 @@ function stubNode(key, text = '') {
 function stubRoot(nodes) {
   return { querySelectorAll: () => nodes };
 }
+
+test('fontConfigFor: returns the Noto Sans Thai href and family for "th"', () => {
+  const cfg = fontConfigFor('th');
+  assert.ok(cfg, 'expected a config');
+  assert.match(cfg.href, /Noto\+Sans\+Thai/);
+  assert.equal(cfg.family, 'Noto Sans Thai');
+});
+
+test('fontConfigFor: returns null for locales that need no extra font', () => {
+  assert.equal(fontConfigFor('en'), null);
+  assert.equal(fontConfigFor('xx'), null);
+});
+
+function stubDoc() {
+  const head = { children: [], appendChild(node) { this.children.push(node); } };
+  const cssVars = {};
+  const byId = {};
+  return {
+    head,
+    cssVars,
+    documentElement: { style: { setProperty(name, value) { cssVars[name] = value; } } },
+    getElementById(id) { return byId[id] || null; },
+    createElement(tag) {
+      return {
+        tagName: tag.toUpperCase(),
+        _attrs: {},
+        setAttribute(k, v) { this._attrs[k] = v; },
+        set id(v) { this._id = v; byId[v] = this; },
+        get id() { return this._id; },
+      };
+    },
+  };
+}
+
+test('installFontFor: appends one <link rel=stylesheet> to <head> for "th"', () => {
+  const doc = stubDoc();
+  installFontFor('th', doc);
+  assert.equal(doc.head.children.length, 1);
+  const link = doc.head.children[0];
+  assert.equal(link.tagName, 'LINK');
+  assert.equal(link._attrs.rel, 'stylesheet');
+  assert.match(link._attrs.href, /Noto\+Sans\+Thai/);
+});
+
+test('installFontFor: is idempotent — calling twice for the same locale leaves a single <link>', () => {
+  const doc = stubDoc();
+  installFontFor('th', doc);
+  installFontFor('th', doc);
+  assert.equal(doc.head.children.length, 1);
+});
+
+test('installFontFor: sets --sans CSS variable to start with the locale font family', () => {
+  const doc = stubDoc();
+  installFontFor('th', doc);
+  assert.match(doc.cssVars['--sans'], /^"Noto Sans Thai"/);
+});
+
+test('installFontFor: is a no-op for locales without a font config ("en")', () => {
+  const doc = stubDoc();
+  installFontFor('en', doc);
+  assert.equal(doc.head.children.length, 0);
+  assert.equal(doc.cssVars['--sans'], undefined);
+});
 
 test('nativeLabel: returns the native-language name for a known locale', () => {
   assert.equal(nativeLabel('en'), 'English');

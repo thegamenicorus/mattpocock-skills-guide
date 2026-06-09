@@ -39,6 +39,32 @@ export const SUPPORTED = ['en', 'th'];
 
 const NATIVE_LABELS = { en: 'English', th: 'ไทย' };
 
+const FONT_CONFIGS = {
+  th: {
+    family: 'Noto Sans Thai',
+    href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap',
+  },
+};
+
+export function fontConfigFor(locale) {
+  return FONT_CONFIGS[locale] || null;
+}
+
+const BASE_SANS = '"Avenir Next", "Segoe UI", sans-serif';
+
+export function installFontFor(locale, doc) {
+  const cfg = fontConfigFor(locale);
+  if (!cfg) return;
+  const id = `i18n-font-${locale}`;
+  if (doc.getElementById(id)) return;
+  const link = doc.createElement('link');
+  link.id = id;
+  link.setAttribute('rel', 'stylesheet');
+  link.setAttribute('href', cfg.href);
+  doc.head.appendChild(link);
+  doc.documentElement.style.setProperty('--sans', `"${cfg.family}", ${BASE_SANS}`);
+}
+
 export function nativeLabel(locale) {
   return NATIVE_LABELS[locale] || locale;
 }
@@ -65,14 +91,31 @@ export function selectLocale(locale, deps) {
 
 let defaultMap = null;
 
+async function awaitFontReady(locale) {
+  const cfg = fontConfigFor(locale);
+  if (!cfg || !document.fonts || !document.fonts.load) return;
+  try {
+    await document.fonts.load(`1rem "${cfg.family}"`);
+  } catch {
+    // Network or CORS failure on the font — fall through; text will show in
+    // the fallback stack, which is the same outcome we'd get without await.
+  }
+}
+
 export async function setLocale(locale) {
   if (!SUPPORTED.includes(locale)) locale = SUPPORTED[0];
   if (defaultMap === null) defaultMap = captureDefaultMap(document);
   const debug = new URL(location.href).searchParams.get('debug') === '1';
-  const map =
+  installFontFor(locale, document);
+  if (!fontConfigFor(locale)) {
+    document.documentElement.style.setProperty('--sans', BASE_SANS);
+  }
+  const [map] = await Promise.all([
     locale === SUPPORTED[0]
-      ? defaultMap
-      : await fetch(`i18n/${locale}.json`, { cache: 'no-cache' }).then((r) => r.json());
+      ? Promise.resolve(defaultMap)
+      : fetch(`i18n/${locale}.json`, { cache: 'no-cache' }).then((r) => r.json()),
+    awaitFontReady(locale),
+  ]);
   applyTranslations(document, map, { debug, locale });
   if (map['title.text']) document.title = map['title.text'];
   document.documentElement.lang = locale;
@@ -101,6 +144,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     selectLocale,
     nativeLabel,
     pickerOptionsFor,
+    fontConfigFor,
+    installFontFor,
     SUPPORTED,
   };
   const locale = resolveLocale({
