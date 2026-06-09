@@ -41,3 +41,7 @@ build/
 .env
 .env.local
 .env.*.local
+
+# AI
+.agents
+.claude
