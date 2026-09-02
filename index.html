@@ -349,6 +349,7 @@
 
       .content {
         display: grid;
+        grid-template-columns: minmax(0, 1fr);
         gap: 20px;
       }
 
@@ -679,7 +680,12 @@
         .matrix,
         .mini-grid,
         .catalog-grid {
-          grid-template-columns: 1fr;
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .sticky,
+        .content {
+          min-width: 0;
         }
 
         .sticky {
@@ -701,6 +707,7 @@
       }
     </style>
   </head>
+  <!-- skills-sync: mattpocock/skills@6654f6b (2026-08-24) https://github.com/mattpocock/skills | caveman: JuliusBrussee/caveman https://github.com/JuliusBrussee/caveman -->
   <body>
     <label class="lang-picker-label" for="lang-picker">
       <span class="visually-hidden" data-i18n="picker.label">Language</span>
@@ -773,6 +780,7 @@
             <a href="#feature" data-i18n="toc.feature">New Feature</a>
             <a href="#bug" data-i18n="toc.bug">Bug Fix</a>
             <a href="#project" data-i18n="toc.project">New Project</a>
+            <a href="#huge" data-i18n="toc.huge">Huge / Foggy Project</a>
             <a href="#legacy" data-i18n="toc.legacy">Legacy Codebase</a>
             <a href="#poc" data-i18n="toc.poc">PoC / Prototype</a>
             <a href="#testing" data-i18n="toc.testing">Testing</a>
@@ -791,16 +799,16 @@
                 code.
               </li>
               <li data-i18n="mentalModel.prdIssues.html">
-                <strong>PRD / Issues</strong>: turn decisions into executable
+                <strong>Spec / Tickets</strong>: turn decisions into executable
                 work.
               </li>
               <li data-i18n="mentalModel.tddDiagnose.html">
                 <strong>TDD / Diagnose</strong>: use feedback loops instead of
                 guessing.
               </li>
-              <li data-i18n="mentalModel.zoomOut.html">
-                <strong>Zoom Out</strong>: understand system shape before
-                changing it.
+              <li data-i18n="mentalModel.implement.html">
+                <strong>Implement</strong>: execute slices end to end, one issue
+                at a time.
               </li>
             </ul>
           </section>
@@ -809,9 +817,9 @@
             <h2 data-i18n="caveats.heading">Caveats</h2>
             <ul>
               <li data-i18n="caveats.stackBias.html">
-                <strong>Stack bias</strong>: skills lean TypeScript / Node +
-                GitHub issues. Django, GitLab, or other setups may need a forked
-                skill.
+                <strong>Integration bias</strong>: setup supports GitHub,
+                Linear, and local files; custom trackers need their own adapter.
+                Several misc utilities are JS/TS-specific.
               </li>
               <li data-i18n="caveats.modelStrength.html">
                 <strong>Model strength</strong>: grilling skills can bail or
@@ -841,11 +849,11 @@
 
             <div class="skills-strip">
               <span>/setup-matt-pocock-skills</span>
+              <span>/ask-matt</span>
               <span>/grill-with-docs</span>
-              <span>/to-prd</span>
-              <span>/to-issues</span>
-              <span>/tdd</span>
-              <span>/diagnose</span>
+              <span>/to-spec</span>
+              <span>/to-tickets</span>
+              <span>/implement</span>
             </div>
 
             <div class="deck">
@@ -853,11 +861,9 @@
                 <article class="mini">
                   <h4 data-i18n="start.install.heading">1. Install</h4>
                   <p data-i18n="start.install.body.html">
-                    Add the pack with
-                    <code>npx skills@latest add mattpocock/skills</code>, then
-                    select the skills you want and make sure
-                    <code>/setup-matt-pocock-skills</code>
-                    is included.
+                    Choose managed Claude Code plugin or editable
+                    <code>skills.sh</code> files. Do not install both. With
+                    skills.sh, include <code>/setup-matt-pocock-skills</code>.
                   </p>
                 </article>
                 <article class="mini">
@@ -877,33 +883,25 @@
               </div>
 
               <div class="callout" data-i18n="start.callout2.html">
-                <strong>Missing symlink after install?</strong> The installer
-                drops everything into <code>.agents/</code> (with
-                <code>skills/</code> inside), but Claude Code only looks at
-                <code>.claude/</code>. The fix is a single directory-level
-                symlink: <code>.claude → .agents</code>, so opening
-                <code>.claude</code> shows the same <code>skills/</code> folder.
-                On fresh repos that link sometimes doesn’t get created, so
-                <code>/setup-matt-pocock-skills</code> and friends are silently
-                missing. Verify with <code>ls -la .claude</code> — if it isn’t a
-                symlink to <code>.agents</code>, create it manually and restart
-                Claude Code so the registry reloads.
+                <strong>Pick one install path.</strong> Claude Code plugin is a
+                managed, read-only subscription that updates with upstream.
+                <code>skills.sh</code> copies editable files you own. Installing
+                both gives you every skill twice.
               </div>
 
               <div class="install-path">
                 <h4 data-i18n="start.install1.heading.html">
-                  Option A · Manual install
-                  <span class="path-meta">run in your shell</span>
+                  Option A · Claude Code plugin
+                  <span class="path-meta">managed + auto-updated</span>
                 </h4>
                 <p data-i18n="start.install1.intro.html">
-                  Install the pack yourself, then make sure the
-                  <code>.claude → .agents</code> symlink is in place so Claude
-                  Code can see the skills.
+                  Install official marketplace plugin. Files stay read-only;
+                  updates arrive when Matt ships them.
                 </p>
 
                 <div class="prompt">
                   <div class="prompt-head">
-                    <span class="label" data-i18n="start.install1.label1">1. Install command</span>
+                    <span class="label" data-i18n="start.install1.label1">From your shell</span>
                     <button
                       class="copy-btn"
                       type="button"
@@ -914,56 +912,53 @@
                     </button>
                   </div>
                   <pre id="install-command">
-npx skills@latest add mattpocock/skills</pre
+claude plugins install mattpocock-skills</pre
                   >
                 </div>
 
                 <div class="prompt">
                   <div class="prompt-head">
-                    <span class="label" data-i18n="start.install1.label2">2. Verify &amp; repair symlink</span>
+                    <span class="label" data-i18n="start.install1.label2">Or inside Claude Code</span>
                     <button
                       class="copy-btn"
                       type="button"
-                      data-copy-target="symlink-fix"
+                      data-copy-target="claude-plugin-command"
                       data-i18n="common.copy"
                     >
                       Copy
                     </button>
                   </div>
-                  <pre id="symlink-fix">
-[ -e .claude ] || ln -s .agents .claude
-ls -la .claude
-ls .claude/skills</pre
+                  <pre id="claude-plugin-command">
+/plugin install mattpocock-skills</pre
                   >
                 </div>
               </div>
 
               <div class="install-path">
                 <h4 data-i18n="start.install2.heading.html">
-                  Option B · Install by prompt
-                  <span class="path-meta">paste into Claude Code</span>
+                  Option B · Codex + other agents
+                  <span class="path-meta">editable local files</span>
                 </h4>
                 <p data-i18n="start.install2.intro">
-                  Prefer to let the agent drive? Paste this in and it will
-                  install the pack, fix the symlink if needed, then run setup
-                  with you.
+                  Use skills.sh. Choose desired skills and include
+                  <code>/setup-matt-pocock-skills</code>. Update later with
+                  <code>npx skills update</code>.
                 </p>
 
                 <div class="prompt">
                   <div class="prompt-head">
-                    <span class="label" data-i18n="start.install2.label">Paste into your agent</span>
+                    <span class="label" data-i18n="start.install2.label">Run in your shell</span>
                     <button
                       class="copy-btn"
                       type="button"
-                      data-copy-target="setup-prompt"
+                      data-copy-target="skills-install-command"
                       data-i18n="common.copy"
                     >
                       Copy
                     </button>
                   </div>
-                  <p class="prompt-lang-note" data-i18n="prompt.note"></p>
-                  <pre id="setup-prompt">
-Install Matt Pocock's skills with `npx skills@latest add mattpocock/skills`, make sure /setup-matt-pocock-skills is available, then run /setup-matt-pocock-skills for this repository.</pre
+                  <pre id="skills-install-command">
+npx skills@latest add mattpocock/skills</pre
                   >
                 </div>
               </div>
@@ -981,8 +976,8 @@ Install Matt Pocock's skills with `npx skills@latest add mattpocock/skills`, mak
               </div>
               <div>
                 <span class="tag" data-i18n="feature.bestChain.html"
-                  ><strong>Best chain</strong> grill-with-docs → to-prd →
-                  to-issues → tdd</span
+                  ><strong>Best chain</strong> grill-with-docs → to-spec →
+                  to-tickets → implement</span
                 >
               </div>
             </div>
@@ -996,19 +991,19 @@ Install Matt Pocock's skills with `npx skills@latest add mattpocock/skills`, mak
               </li>
               <li data-i18n="feature.step2.html">
                 <strong>2. Freeze the shape:</strong> use
-                <code>/to-prd</code> to turn the current conversation into a PRD
-                without another interview.
+                <code>/to-spec</code> to synthesize the current conversation into
+                a buildable spec without another interview.
               </li>
               <li data-i18n="feature.step3.html">
                 <strong>3. Break into slices:</strong> use
-                <code>/to-issues</code> so implementation tickets are thin
+                <code>/to-tickets</code> so implementation tickets are thin
                 vertical slices, not “backend first, frontend later” horizontal
                 chunks.
               </li>
               <li data-i18n="feature.step4.html">
-                <strong>4. Build safely:</strong> use <code>/tdd</code> to
-                implement one observable behavior at a time through public
-                interfaces.
+                <strong>4. Build safely:</strong> use <code>/implement</code>
+                to execute the first AFK-ready issue — it uses TDD internally,
+                one observable behavior at a time through public interfaces.
               </li>
             </ul>
 
@@ -1031,9 +1026,9 @@ Install Matt Pocock's skills with `npx skills@latest add mattpocock/skills`, mak
               <article class="mini">
                 <h4 data-i18n="feature.ruleHeading">Important Rule</h4>
                 <p data-i18n="feature.ruleBody.html">
-                  <code>/tdd</code> explicitly rejects horizontal slicing. Do
-                  not write all tests first and all code second. Do one test,
-                  one implementation, repeat.
+                  <code>/implement</code> uses TDD internally and explicitly
+                  rejects horizontal slicing. Do not write all tests first and
+                  all code second. Do one test, one implementation, repeat.
                 </p>
               </article>
             </div>
@@ -1052,7 +1047,7 @@ Install Matt Pocock's skills with `npx skills@latest add mattpocock/skills`, mak
               </div>
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="feature-prompt">
-We need saved drafts for long support replies. Use /grill-with-docs to challenge the idea against existing inbox rules. When the shape is clear, run /to-prd, then /to-issues, then build the first AFK slice with /tdd.</pre
+We need saved drafts for long support replies. Use /grill-with-docs to challenge the idea against existing inbox rules. When the shape is clear, run /to-spec, then /to-tickets, then build the first unblocked ticket with /implement.</pre
               >
             </div>
 
@@ -1071,7 +1066,7 @@ We need saved drafts for long support replies. Use /grill-with-docs to challenge
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="feature-template">
 {your feature idea or product change}
-Use /grill-with-docs to challenge the idea against the existing repo rules, domain language, and ADRs. When the shape is clear, run /to-prd, then /to-issues, then build the first AFK slice with /tdd.</pre
+Use /grill-with-docs to challenge the idea against existing repo rules, domain language, and ADRs. When the shape is clear, run /to-spec, then /to-tickets, then build the first unblocked ticket with /implement.</pre
               >
             </div>
           </section>
@@ -1088,37 +1083,40 @@ Use /grill-with-docs to challenge the idea against the existing repo rules, doma
               </div>
               <div>
                 <span class="tag" data-i18n="bug.bestChain.html"
-                  ><strong>Best chain</strong> zoom-out → diagnose → tdd</span
+                  ><strong>Best chain</strong> diagnosing-bugs → tdd</span
                 >
               </div>
             </div>
 
             <ul class="steps">
               <li data-i18n="bug.step1.html">
-                <strong>1. If the area is unfamiliar:</strong> run
-                <code>/zoom-out</code> first to get a map of relevant modules
-                and callers.
+                <strong>1. Prime the context:</strong> read
+                <code>CONTEXT.md</code> and any ADRs in the area before diving
+                in. If the codebase is a blank slate, skim the relevant module
+                files directly.
               </li>
               <li data-i18n="bug.step2.html">
-                <strong>2. Build a feedback loop:</strong> run
-                <code>/diagnose</code>. Its core rule is: do not guess before
-                you have a reproducible pass/fail loop.
+                <strong>2. Build a feedback loop:</strong> describe the bug to
+                the agent — it will invoke the <code>diagnosing-bugs</code>
+                skill automatically. Its core rule: do not guess before you have
+                a reproducible pass/fail loop.
               </li>
               <li data-i18n="bug.step3.html">
-                <strong>3. Rank hypotheses:</strong> the skill pushes you to
-                generate several falsifiable hypotheses before changing code.
+                <strong>3. Rank hypotheses:</strong> the skill pushes the agent
+                to generate several falsifiable hypotheses before changing code.
               </li>
               <li data-i18n="bug.step4.html">
-                <strong>4. Fix and lock it down:</strong> once you have the
-                right seam, turn the minimized repro into a failing regression
-                test and use <code>/tdd</code> if the repair expands into
-                behavior work.
+                <strong>4. Fix and lock it down:</strong> once the root cause is
+                confirmed, turn the minimized repro into a failing regression
+                test. The agent uses the <code>tdd</code> loop to implement the
+                repair, one behavior at a time.
               </li>
             </ul>
 
             <div class="callout" data-i18n="bug.callout.html">
-              The strongest idea in <code>/diagnose</code>: a fast deterministic
-              loop is 90% of the bug fix. No loop, no serious debugging.
+              The strongest idea in <code>diagnosing-bugs</code>: a fast
+              deterministic loop is 90% of the bug fix. No loop, no serious
+              debugging.
             </div>
 
             <div class="prompt">
@@ -1135,7 +1133,7 @@ Use /grill-with-docs to challenge the idea against the existing repo rules, doma
               </div>
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="bug-prompt">
-Customers sometimes hit a timeout on checkout after entering a promo code. Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch to /tdd, add a failing regression test, fix it, and keep the change minimal.</pre
+Customers sometimes hit a timeout on checkout after entering a promo code. Diagnose the root cause — build a reproducible loop, rank the hypotheses, and instrument the system before touching code. Once you confirm the cause, add a failing regression test and fix it, keeping the change minimal.</pre
               >
             </div>
 
@@ -1154,7 +1152,7 @@ Customers sometimes hit a timeout on checkout after entering a promo code. Use /
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="bug-template">
 {your problem}
-Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch to /tdd, add a failing regression test, fix it, and keep the change minimal.</pre
+Diagnose the root cause — build a reproducible loop, rank the hypotheses, and instrument the system before touching code. Once you confirm the cause, add a failing regression test and fix it, keeping the change minimal.</pre
               >
             </div>
           </section>
@@ -1171,8 +1169,8 @@ Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch
               </div>
               <div>
                 <span class="tag" data-i18n="project.bestChain.html"
-                  ><strong>Best chain</strong> grill-me → prototype → to-prd →
-                  to-issues → tdd per issue</span
+                  ><strong>Best chain</strong> grill-me → prototype → to-spec →
+                  to-tickets → implement per ticket</span
                 >
               </div>
             </div>
@@ -1190,17 +1188,17 @@ Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch
               </li>
               <li data-i18n="project.step3.html">
                 <strong>3. Turn it into an artifact:</strong> use
-                <code>/to-prd</code> once the concept stops moving.
+                <code>/to-spec</code> once the concept stops moving.
               </li>
               <li data-i18n="project.step4.html">
                 <strong>4. Turn strategy into slices:</strong> use
-                <code>/to-issues</code> so the first build steps are
+                <code>/to-tickets</code> so the first build steps are
                 independently shippable.
               </li>
               <li data-i18n="project.step5.html">
                 <strong>5. Build one issue at a time:</strong> take the first
-                AFK-ready slice, use <code>/zoom-out</code> if the code area is
-                unfamiliar, then implement that issue with <code>/tdd</code>.
+                AFK-ready slice and implement it with <code>/implement</code>,
+                which uses TDD at pre-agreed seams.
               </li>
               <li data-i18n="project.step6.html">
                 <strong>6. Repeat until the project exists:</strong> close each
@@ -1230,11 +1228,11 @@ Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch
             </div>
 
             <div class="callout" data-i18n="project.callout.html">
-              <strong>Important:</strong> <code>/to-issues</code> is not the end
+              <strong>Important:</strong> <code>/to-tickets</code> is not the end
               of the project. It is the handoff from planning into execution.
               After that, your working loop becomes: pick one issue, implement
-              it with <code>/tdd</code>, close it, then move to the next slice
-              until the product is complete.
+              it with <code>/implement</code>, close it, then move to the next
+              slice until the product is complete.
             </div>
 
             <div class="prompt">
@@ -1251,7 +1249,7 @@ Use /zoom-out if needed, then /diagnose. Once you confirm the root cause, switch
               </div>
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="project-prompt">
-I want an internal approvals dashboard, but the scope is fuzzy. Start with /grill-me. When we know the riskiest assumption, use /prototype. If the concept holds up, create the PRD and issues. Then take the first AFK-ready issue, implement it with /tdd, and continue issue by issue until the dashboard is usable end to end.</pre
+I want an internal approvals dashboard, but the scope is fuzzy. Start with /grill-me. When we know the riskiest assumption, use /prototype. If the concept holds up, create a spec and tracer-bullet tickets. Then take the first unblocked ticket, implement it with /implement, and continue ticket by ticket until the dashboard works end to end.</pre
               >
             </div>
 
@@ -1270,8 +1268,62 @@ I want an internal approvals dashboard, but the scope is fuzzy. Start with /gril
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="project-template">
 {your project idea, product concept, or internal tool idea}
-Start with /grill-me. When we know the riskiest assumption, use /prototype. If the concept holds up, create the PRD and issues. Then take the first AFK-ready issue, implement it with /tdd, and continue issue by issue until the project works end to end.</pre
+Start with /grill-me. When we know the riskiest assumption, use /prototype. If the concept holds up, create a spec and tracer-bullet tickets. Then take the first unblocked ticket, implement it with /implement, and continue ticket by ticket until the project works end to end.</pre
               >
+            </div>
+          </section>
+
+          <section id="huge" class="workflow">
+            <div class="section-head">
+              <div>
+                <h3 data-i18n="huge.heading">Huge / Foggy Project</h3>
+                <p data-i18n="huge.intro">
+                  Use this only when the destination cannot fit inside one
+                  sharp session: major migration, greenfield platform, or
+                  multi-team rewrite with unknowns behind unknowns.
+                </p>
+              </div>
+              <div>
+                <span class="tag" data-i18n="huge.bestChain.html"
+                  ><strong>Best chain</strong> wayfinder → to-spec → to-tickets
+                  → implement</span
+                >
+              </div>
+            </div>
+            <ul class="steps">
+              <li data-i18n="huge.step1.html">
+                <strong>1. Name destination:</strong> <code>/wayfinder</code>
+                first defines what “done planning” means.
+              </li>
+              <li data-i18n="huge.step2.html">
+                <strong>2. Chart visible frontier:</strong> create decision
+                tickets for questions sharp enough to ask; leave everything
+                else under fog of war.
+              </li>
+              <li data-i18n="huge.step3.html">
+                <strong>3. Resolve one decision per session:</strong> research,
+                prototype, grill, or complete a human/agent task. Closed
+                decisions reveal new frontier tickets.
+              </li>
+              <li data-i18n="huge.step4.html">
+                <strong>4. Collapse map into delivery:</strong> once route is
+                clear, use <code>/to-spec</code>, <code>/to-tickets</code>, then
+                fresh <code>/implement</code> sessions per unblocked ticket.
+              </li>
+            </ul>
+            <div class="callout" data-i18n="huge.callout.html">
+              <strong>Do not use Wayfinder for a well-scoped feature.</strong>
+              It maps decisions, not build tasks. Going straight from map to
+              <code>/implement</code> discards linked reasoning.
+            </div>
+            <div class="prompt">
+              <div class="prompt-head">
+                <span class="label" data-i18n="common.examplePrompt">Example prompt</span>
+                <button class="copy-btn" type="button" data-copy-target="huge-prompt" data-i18n="common.copy">Copy</button>
+              </div>
+              <p class="prompt-lang-note" data-i18n="prompt.note"></p>
+              <pre id="huge-prompt">
+/wayfinder We need to migrate our multi-tenant billing platform from per-seat invoices to usage-based billing across Stripe, data warehouse, entitlements, and customer reporting. Destination: a reviewed implementation spec with migration order, rollback strategy, and every unresolved product or data decision closed. Map decisions first; do not start implementation.</pre>
             </div>
           </section>
 
@@ -1288,7 +1340,7 @@ Start with /grill-me. When we know the riskiest assumption, use /prototype. If t
               <div>
                 <span class="tag" data-i18n="legacy.bestChain.html"
                   ><strong>Best chain</strong> improve-codebase-architecture →
-                  grill-with-docs → zoom-out → normal flow</span
+                  grill-with-docs → normal flow</span
                 >
               </div>
             </div>
@@ -1307,10 +1359,10 @@ Start with /grill-me. When we know the riskiest assumption, use /prototype. If t
                 agent has to invent them on the fly.
               </li>
               <li data-i18n="legacy.step3.html">
-                <strong>3. Zoom in only when needed:</strong> use
-                <code>/zoom-out</code> on the specific module you will touch
-                first, so the change lands with full awareness of callers and
-                boundaries.
+                <strong>3. Read before you touch:</strong> before changing a
+                specific module, read it directly — using <code>CONTEXT.md</code>
+                and ADRs as your map — so the change lands with full awareness
+                of callers and boundaries.
               </li>
               <li data-i18n="legacy.step4.html">
                 <strong>4. Resume normal flow:</strong> once context exists,
@@ -1339,7 +1391,7 @@ Start with /grill-me. When we know the riskiest assumption, use /prototype. If t
               </div>
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="legacy-prompt">
-I just inherited this service and need to add a new endpoint. Use /improve-codebase-architecture to map the muddiest seams, then /grill-with-docs to seed CONTEXT.md with the domain language you find. After that, use /zoom-out on the area I'll touch first, then switch into the normal feature flow.</pre
+I just inherited this service and need to add a new endpoint. Use /improve-codebase-architecture to map the muddiest seams, then /grill-with-docs to seed CONTEXT.md with the domain language you find. After that, read the specific module I'll touch first using CONTEXT.md and ADRs as a map, then switch into the normal feature flow.</pre
               >
             </div>
 
@@ -1358,7 +1410,7 @@ I just inherited this service and need to add a new endpoint. Use /improve-codeb
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="legacy-template">
 {the inherited service, legacy module, or unfamiliar repo you need to change}
-Use /improve-codebase-architecture to map the muddiest seams, then /grill-with-docs to seed or extend CONTEXT.md with the domain language you find. After that, use /zoom-out on the area I'll touch first, then switch into the normal feature or bug flow.</pre
+Use /improve-codebase-architecture to map the muddiest seams, then /grill-with-docs to seed or extend CONTEXT.md with the domain language you find. After that, read the area I'll touch first directly — using CONTEXT.md and ADRs as a map — then switch into the normal feature or bug flow.</pre
               >
             </div>
           </section>
@@ -1454,7 +1506,7 @@ Use /prototype to create a throwaway prototype that answers the question quickly
                 </p>
               </div>
               <div>
-                <span class="tag" data-i18n="testing.bestSkill.html"><strong>Best skill</strong> tdd</span>
+                <span class="tag" data-i18n="testing.bestSkill.html"><strong>Best skills</strong> /implement · tdd (model-invoked)</span>
               </div>
             </div>
 
@@ -1507,7 +1559,7 @@ Use /prototype to create a throwaway prototype that answers the question quickly
               </div>
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="testing-prompt">
-Use /tdd for this feature. Confirm the public interface and the highest-value behaviors first, then implement one tracer-bullet behavior at a time with integration-style tests.</pre
+Use /implement for this feature. Confirm the public interface and the highest-value behaviors first, then implement one tracer-bullet behavior at a time with integration-style tests.</pre
               >
             </div>
 
@@ -1526,7 +1578,7 @@ Use /tdd for this feature. Confirm the public interface and the highest-value be
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="testing-template">
 {your feature, fix, or behavior change}
-Use /tdd. Confirm the public interface and the highest-value behaviors first, then implement one tracer-bullet behavior at a time with integration-style tests.</pre
+Use /implement. Confirm the public interface and the highest-value behaviors first, then implement one tracer-bullet behavior at a time with integration-style tests.</pre
               >
             </div>
           </section>
@@ -1545,10 +1597,10 @@ Use /tdd. Confirm the public interface and the highest-value behaviors first, th
 
             <div class="matrix">
               <article class="mini">
-                <h4 data-i18n="quickdev.contextHeading">Need fast context</h4>
-                <p data-i18n="quickdev.contextBody.html">
-                  Use <code>/zoom-out</code> to get a system map before touching
-                  an unfamiliar area.
+                <h4 data-i18n="quickdev.routerHeading">Not sure where to start</h4>
+                <p data-i18n="quickdev.routerBody.html">
+                  Use <code>/ask-matt</code> — it routes you to the right skill
+                  or flow based on your situation.
                 </p>
               </article>
               <article class="mini">
@@ -1561,10 +1613,16 @@ Use /tdd. Confirm the public interface and the highest-value behaviors first, th
               <article class="mini">
                 <h4 data-i18n="quickdev.tokensHeading">Need fewer tokens</h4>
                 <p data-i18n="quickdev.tokensBody.html">
-                  Use <code>/caveman</code> when you want terse but still
-                  technically accurate responses.
+                  Use <code>/caveman</code> (external skill — see install below)
+                  for terse but technically accurate responses.
                 </p>
               </article>
+            </div>
+
+            <div class="callout" data-i18n="quickdev.cavemanCallout.html">
+              <strong>/caveman is now a separate community skill.</strong>
+              Install it once across your agents:
+              <code>npx skills@latest add JuliusBrussee/caveman</code>
             </div>
 
             <div class="prompt">
@@ -1581,7 +1639,7 @@ Use /tdd. Confirm the public interface and the highest-value behaviors first, th
               </div>
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="quickdev-prompts">
-/zoom-out this auth flow before we change it
+/ask-matt  ← when you're not sure which skill fits
 
 /grill-me on this refactor plan
 
@@ -1603,8 +1661,8 @@ Use /tdd. Confirm the public interface and the highest-value behaviors first, th
               </div>
               <p class="prompt-lang-note" data-i18n="prompt.note"></p>
               <pre id="quickdev-templates">
-{unfamiliar code area}
-/zoom-out this before we change it
+{unsure which skill or flow fits}
+/ask-matt
 
 {fuzzy plan or refactor idea}
 /grill-me on this plan
@@ -1707,24 +1765,37 @@ Use /handoff so the next agent can pick this up without losing context.</pre
 
             <div class="matrix">
               <article class="mini">
+                <h4 data-i18n="recipes.unsureHeading">Not Sure Where To Start</h4>
+                <p data-i18n="recipes.unsureBody.html">
+                  <code>/ask-matt</code> — routes you to the right flow.
+                </p>
+              </article>
+              <article class="mini">
                 <h4 data-i18n="recipes.featureHeading">Feature In Existing Repo</h4>
                 <p>
-                  <code>/grill-with-docs → /to-prd → /to-issues → /tdd</code>
+                  <code>/grill-with-docs → /to-spec → /to-tickets → /implement</code>
                 </p>
               </article>
               <article class="mini">
                 <h4 data-i18n="recipes.bugHeading">Production Bug</h4>
-                <p>
-                  <code>/zoom-out → /diagnose → regression test → fix</code>
+                <p data-i18n="recipes.bugBody.html">
+                  <code>diagnosing-bugs</code> (describe the bug) → regression
+                  test → fix
                 </p>
               </article>
               <article class="mini">
                 <h4 data-i18n="recipes.greenfieldHeading">Greenfield Idea</h4>
                 <p>
                   <code
-                    >/grill-me → /prototype → /to-prd → /to-issues → /tdd per
-                    issue</code
+                    >/grill-me → /prototype → /to-spec → /to-tickets → /implement
+                    per issue</code
                   >
+                </p>
+              </article>
+              <article class="mini">
+                <h4 data-i18n="recipes.hugeHeading">Huge Foggy Effort</h4>
+                <p data-i18n="recipes.hugeBody.html">
+                  <code>/wayfinder → /to-spec → /to-tickets → /implement</code>
                 </p>
               </article>
               <article class="mini">
@@ -1734,22 +1805,40 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                 </p>
               </article>
               <article class="mini">
-                <h4 data-i18n="recipes.hardReadHeading">Hard To Read Area</h4>
-                <p data-i18n="recipes.hardReadBody.html"><code>/zoom-out</code> before changing any code.</p>
-              </article>
-              <article class="mini">
                 <h4 data-i18n="recipes.legacyHeading">Legacy Codebase</h4>
                 <p>
                   <code
                     >/improve-codebase-architecture → /grill-with-docs →
-                    /zoom-out → normal flow</code
+                    normal flow</code
                   >
+                </p>
+              </article>
+              <article class="mini">
+                <h4 data-i18n="recipes.researchHeading">Need External Facts</h4>
+                <p data-i18n="recipes.researchBody.html">
+                  <code>research</code> in background → cited Markdown →
+                  <code>/grill-with-docs</code>
+                </p>
+              </article>
+              <article class="mini">
+                <h4 data-i18n="recipes.questionnaireHeading">Someone Else Has Answer</h4>
+                <p data-i18n="recipes.questionnaireBody.html">
+                  <code>/to-questionnaire</code> → async answers →
+                  <code>/to-spec</code>
+                </p>
+              </article>
+              <article class="mini">
+                <h4 data-i18n="recipes.wizardHeading">Human-Only Setup</h4>
+                <p data-i18n="recipes.wizardBody.html">
+                  Ask for setup/cutover → <code>wizard</code> generates guided
+                  bash flow.
                 </p>
               </article>
               <article class="mini">
                 <h4 data-i18n="recipes.pairingHeading">Compressed Pairing</h4>
                 <p data-i18n="recipes.pairingBody.html">
-                  <code>/caveman</code> while keeping the rest of your workflow
+                  <code>/caveman</code> (external — install from
+                  JuliusBrussee/caveman) while keeping the rest of your workflow
                   unchanged.
                 </p>
               </article>
@@ -1777,8 +1866,8 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                 fill in implementation later”.
               </li>
               <li data-i18n="mistakes.item3.html">
-                Do not use <code>/diagnose</code> as an excuse to brainstorm
-                without a reproducible loop.
+                Do not let <code>diagnosing-bugs</code> become an excuse to
+                brainstorm without a reproducible loop.
               </li>
               <li data-i18n="mistakes.item4">
                 Do not let prototype code quietly become production without
@@ -1811,18 +1900,18 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     <strong data-i18n="sim.role.user">User</strong>
                     <p data-i18n="sim.bug.user.html">
                       Customers sometimes hit a timeout on checkout after
-                      entering a promo code. Use <code>/zoom-out</code> if
-                      needed, then <code>/diagnose</code>. Once you confirm the
-                      root cause, switch to <code>/tdd</code>, add a failing
-                      regression test, fix it, and keep the change minimal.
+                      entering a promo code. Diagnose the root cause — build a
+                      reproducible loop, rank hypotheses, and instrument before
+                      touching code. Once you confirm the cause, add a failing
+                      regression test and fix it, keeping the change minimal.
                     </p>
                   </div>
                   <div class="turn">
                     <strong data-i18n="sim.role.agent">Agent</strong>
                     <p data-i18n="sim.bug.agent1.html">
-                      First it maps the checkout flow, identifies the promo-code
-                      path, and builds the fastest reproducible loop. Then
-                      <code>/diagnose</code> ranks hypotheses such as retry
+                      It reads <code>CONTEXT.md</code> and the checkout module,
+                      builds the fastest reproducible loop, then the
+                      <code>diagnosing-bugs</code> skill ranks hypotheses: retry
                       storms, stale pricing cache, or promo validation deadlock.
                     </p>
                   </div>
@@ -1830,11 +1919,10 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     <strong data-i18n="sim.role.agent">Agent</strong>
                     <p data-i18n="sim.bug.agent2.html">
                       After instrumentation, it proves the timeout happens when
-                      promo validation calls pricing twice under one request. At
-                      that point the chain changes: it switches to
-                      <code>/tdd</code>, writes the failing regression test
-                      around checkout with a promo code, applies the smallest
-                      fix, and reruns the suite.
+                      promo validation calls pricing twice under one request.
+                      The <code>tdd</code> skill then writes the failing
+                      regression test around checkout with a promo code, applies
+                      the smallest fix, and reruns the suite.
                     </p>
                   </div>
                   <div class="turn">
@@ -1857,8 +1945,8 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                       We need saved drafts for long support replies. Use
                       <code>/grill-with-docs</code> to challenge the idea
                       against existing inbox rules. When the shape is clear, run
-                      <code>/to-prd</code>, then <code>/to-issues</code>, then
-                      build the first AFK slice with <code>/tdd</code>.
+                      <code>/to-spec</code>, then <code>/to-tickets</code>, then
+                      build the first AFK slice with <code>/implement</code>.
                     </p>
                   </div>
                   <div class="turn">
@@ -1874,19 +1962,19 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                   <div class="turn">
                     <strong data-i18n="sim.role.agent">Agent</strong>
                     <p data-i18n="sim.feature.agent2.html">
-                      Once the decisions stop moving, <code>/to-prd</code> turns
+                      Once the decisions stop moving, <code>/to-spec</code> turns
                       the conversation into a stable artifact.
-                      <code>/to-issues</code> then slices the work into vertical
+                      <code>/to-tickets</code> then slices the work into vertical
                       units such as draft persistence, editor restore, and draft
                       conflict handling. The first slice is implemented via
-                      <code>/tdd</code>.
+                      <code>/implement</code>.
                     </p>
                   </div>
                   <div class="turn">
                     <strong data-i18n="sim.role.done">Done</strong>
                     <p data-i18n="sim.feature.done">
-                      You end with a clarified feature, a PRD, actionable
-                      issues, and one shipped slice backed by behavior-first
+                      You end with a clarified feature, a spec, actionable
+                      tickets, and one shipped slice backed by behavior-first
                       tests.
                     </p>
                   </div>
@@ -1930,7 +2018,7 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     <p data-i18n="sim.poc.done">
                       You get a decision, not just a mockup. The next step is
                       either delete the prototype or convert the chosen
-                      direction into a PRD and issues.
+                      direction into a spec and tickets.
                     </p>
                   </div>
                 </div>
@@ -1945,7 +2033,7 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                       I want an internal approvals dashboard, but the scope is
                       fuzzy. Start with <code>/grill-me</code>. When we know the
                       riskiest assumption, use <code>/prototype</code>. If the
-                      concept holds up, create the PRD and issues.
+                      concept holds up, create the spec and tickets.
                     </p>
                   </div>
                   <div class="turn">
@@ -1963,7 +2051,7 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                       It identifies the riskiest assumption as queue triage
                       usability, so <code>/prototype</code> builds a minimal
                       interaction model first. If the model works,
-                      <code>/to-prd</code> and <code>/to-issues</code> convert
+                      <code>/to-spec</code> and <code>/to-tickets</code> convert
                       the idea into a buildable roadmap.
                     </p>
                   </div>
@@ -1971,9 +2059,9 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     <strong data-i18n="sim.role.agent">Agent</strong>
                     <p data-i18n="sim.greenfield.agent3.html">
                       Then execution begins: it picks the first AFK-ready issue,
-                      uses <code>/tdd</code> to implement that vertical slice,
-                      closes it, and repeats slice by slice until the approvals
-                      dashboard works end to end.
+                      uses <code>/implement</code> to execute that vertical
+                      slice with TDD, closes it, and repeats slice by slice
+                      until the approvals dashboard works end to end.
                     </p>
                   </div>
                   <div class="turn">
@@ -2006,9 +2094,29 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                 <h4 data-i18n="skills.engineering.heading">Engineering Skills</h4>
                 <p data-i18n="skills.engineering.intro">
                   Core execution skills for planning, implementation, debugging,
-                  issue slicing, and architecture work.
+                  issue slicing, and architecture work. Skills marked
+                  <em>model-invoked</em> activate automatically when you describe
+                  your intent — you don't need to type the slash command
+                  explicitly.
                 </p>
                 <div class="catalog-grid">
+                  <article class="skill-card">
+                    <h5>/ask-matt</h5>
+                    <p data-i18n="skills.askMatt.useWhen.html">
+                      <strong>Use when:</strong> you're not sure which skill or
+                      flow fits your current situation.
+                    </p>
+                    <p data-i18n="skills.askMatt.what.html">
+                      <strong>What it does:</strong> acts as a router over all
+                      user-invoked skills — describes the main flow, the
+                      on-ramps, and the standalone skills, then recommends the
+                      right path.
+                    </p>
+                    <p data-i18n="skills.askMatt.constraint.html">
+                      <strong>Constraint:</strong> start here when you're stuck,
+                      not when you already know the chain.
+                    </p>
+                  </article>
                   <article class="skill-card">
                     <h5>/setup-matt-pocock-skills</h5>
                     <p data-i18n="skills.setup.useWhen.html">
@@ -2046,10 +2154,10 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     </p>
                   </article>
                   <article class="skill-card">
-                    <h5>/to-prd</h5>
+                    <h5>/to-spec</h5>
                     <p data-i18n="skills.toPrd.useWhen.html">
                       <strong>Use when:</strong> the conversation is mature
-                      enough to be frozen into a PRD.
+                      enough to be frozen into a spec.
                     </p>
                     <p data-i18n="skills.toPrd.what.html">
                       <strong>What it does:</strong> turns discussion into a
@@ -2062,10 +2170,10 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     </p>
                   </article>
                   <article class="skill-card">
-                    <h5>/to-issues</h5>
+                    <h5>/to-tickets</h5>
                     <p data-i18n="skills.toIssues.useWhen.html">
                       <strong>Use when:</strong> you need execution-ready issues
-                      from a PRD or design conversation.
+                      from a spec or design conversation.
                     </p>
                     <p data-i18n="skills.toIssues.what.html">
                       <strong>What it does:</strong> creates small vertical
@@ -2078,56 +2186,41 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     </p>
                   </article>
                   <article class="skill-card">
-                    <h5>/tdd</h5>
-                    <p data-i18n="skills.tdd.useWhen.html">
-                      <strong>Use when:</strong> implementing behavior through a
-                      disciplined feedback loop.
+                    <h5>/implement</h5>
+                    <p data-i18n="skills.implement.useWhen.html">
+                      <strong>Use when:</strong> you have a spec or set of tickets
+                      and want the agent to execute them end to end.
                     </p>
-                    <p data-i18n="skills.tdd.what.html">
-                      <strong>What it does:</strong> pushes red-green-refactor
-                      with public-interface, integration-style tests and one
-                      tracer-bullet behavior per cycle.
+                    <p data-i18n="skills.implement.what.html">
+                      <strong>What it does:</strong> works through the described
+                      work using TDD at pre-agreed seams, runs typechecking
+                      regularly, and runs <code>/code-review</code> on completion.
                     </p>
-                    <p data-i18n="skills.tdd.constraint.html">
-                      <strong>Constraint:</strong> avoid implementation-coupled
-                      tests and “write all tests first” workflows.
+                    <p data-i18n="skills.implement.constraint.html">
+                      <strong>Constraint:</strong> best used after planning is
+                      complete — not as a shortcut past design.
                     </p>
                   </article>
                   <article class="skill-card">
-                    <h5>/diagnose</h5>
-                    <p data-i18n="skills.diagnose.useWhen.html">
+                    <h5>diagnosing-bugs <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.diagnosingBugs.useWhen.html">
                       <strong>Use when:</strong> a bug is real but the cause is
-                      unknown.
+                      unknown — just describe the problem and the agent applies
+                      this skill automatically.
                     </p>
-                    <p data-i18n="skills.diagnose.what.html">
-                      <strong>What it does:</strong> forces you to create a
-                      reproducible loop, rank hypotheses, instrument the system,
-                      verify the root cause, then lock the fix with a regression
-                      test.
+                    <p data-i18n="skills.diagnosingBugs.what.html">
+                      <strong>What it does:</strong> builds a tight reproducible
+                      loop, ranks falsifiable hypotheses, instruments the system,
+                      verifies the root cause, then locks the fix with a
+                      regression test.
                     </p>
-                    <p data-i18n="skills.diagnose.constraint.html">
+                    <p data-i18n="skills.diagnosingBugs.constraint.html">
                       <strong>Constraint:</strong> no serious debugging without
                       a loop you trust.
                     </p>
                   </article>
                   <article class="skill-card">
-                    <h5>/zoom-out</h5>
-                    <p data-i18n="skills.zoomOut.useWhen.html">
-                      <strong>Use when:</strong> you are entering an unfamiliar
-                      code area.
-                    </p>
-                    <p data-i18n="skills.zoomOut.what.html">
-                      <strong>What it does:</strong> maps modules, boundaries,
-                      callers, and project glossary terms before you make a
-                      local change.
-                    </p>
-                    <p data-i18n="skills.zoomOut.constraint.html">
-                      <strong>Constraint:</strong> use it before a risky change,
-                      not after you have already gone tunnel-vision on one file.
-                    </p>
-                  </article>
-                  <article class="skill-card">
-                    <h5>/prototype</h5>
+                    <h5>prototype <em>(model-invoked)</em></h5>
                     <p data-i18n="skills.prototype.useWhen.html">
                       <strong>Use when:</strong> you need to answer a question
                       quickly with throwaway code.
@@ -2175,14 +2268,106 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                       the abstract.
                     </p>
                   </article>
+                  <article class="skill-card">
+                    <h5>/wayfinder</h5>
+                    <p data-i18n="skills.wayfinder.useWhen.html">
+                      <strong>Use when:</strong> a project or migration is too
+                      large and foggy for one context window.
+                    </p>
+                    <p data-i18n="skills.wayfinder.what.html">
+                      <strong>What it does:</strong> maps decision tickets,
+                      blocking edges, and fog of war; resolves one decision per
+                      session until a buildable route appears.
+                    </p>
+                    <p data-i18n="skills.wayfinder.constraint.html">
+                      <strong>Constraint:</strong> it produces decisions, not
+                      deliverables; finish with <code>/to-spec</code>.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>tdd <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.tdd.useWhen.html">
+                      <strong>Use when:</strong> building concrete behavior
+                      test-first, alone or inside <code>/implement</code>.
+                    </p>
+                    <p data-i18n="skills.tdd.what.html">
+                      <strong>What it does:</strong> runs one vertical
+                      red-green-refactor slice at a time through public seams.
+                    </p>
+                    <p data-i18n="skills.tdd.constraint.html">
+                      <strong>Constraint:</strong> never write all tests first;
+                      each passing slice discovers the next.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>code-review <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.codeReview.useWhen.html">
+                      <strong>Use when:</strong> reviewing a branch, PR, or WIP
+                      diff since a fixed point.
+                    </p>
+                    <p data-i18n="skills.codeReview.what.html">
+                      <strong>What it does:</strong> runs Standards and Spec
+                      reviews in parallel, then reports both axes side by side.
+                    </p>
+                    <p data-i18n="skills.codeReview.constraint.html">
+                      <strong>Constraint:</strong> give it a real base commit,
+                      branch, tag, or merge-base.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>research <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.research.useWhen.html">
+                      <strong>Use when:</strong> a decision needs current facts
+                      from primary sources.
+                    </p>
+                    <p data-i18n="skills.research.what.html">
+                      <strong>What it does:</strong> delegates reading to a
+                      background agent and saves a cited Markdown brief in repo.
+                    </p>
+                    <p data-i18n="skills.research.constraint.html">
+                      <strong>Constraint:</strong> research feeds planning; it
+                      does not replace <code>/grill-with-docs</code>.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>resolving-merge-conflicts <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.mergeConflicts.useWhen.html">
+                      <strong>Use when:</strong> a merge or rebase is already
+                      stopped on conflicts.
+                    </p>
+                    <p data-i18n="skills.mergeConflicts.what.html">
+                      <strong>What it does:</strong> resolves each hunk by intent
+                      traced to both sides' primary sources, then finishes Git.
+                    </p>
+                    <p data-i18n="skills.mergeConflicts.constraint.html">
+                      <strong>Constraint:</strong> it never chooses ours/theirs
+                      blindly and never aborts the operation.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>wizard <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.wizard.useWhen.html">
+                      <strong>Use when:</strong> setup needs human-only browser,
+                      credential, secret, migration, or cutover steps.
+                    </p>
+                    <p data-i18n="skills.wizard.what.html">
+                      <strong>What it does:</strong> generates a verified bash
+                      wizard that opens URLs, captures values, and writes env or
+                      CI secrets stage by stage.
+                    </p>
+                    <p data-i18n="skills.wizard.constraint.html">
+                      <strong>Constraint:</strong> only for steps the agent
+                      genuinely cannot perform itself.
+                    </p>
+                  </article>
                 </div>
               </div>
 
               <div class="catalog-group">
                 <h4 data-i18n="skills.productivity.heading">Productivity Skills</h4>
                 <p data-i18n="skills.productivity.intro">
-                  Conversation-shaping skills for clarification, brevity,
-                  continuity, authoring custom skills, and structured learning.
+                  Conversation-shaping skills for clarification, continuity,
+                  async decisions, agent-facing writing, and structured learning.
                 </p>
                 <div class="catalog-grid">
                   <article class="skill-card">
@@ -2203,22 +2388,6 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     </p>
                   </article>
                   <article class="skill-card">
-                    <h5>/caveman</h5>
-                    <p data-i18n="skills.caveman.useWhen.html">
-                      <strong>Use when:</strong> you want low-token, terse
-                      responses during pairing or rapid iteration.
-                    </p>
-                    <p data-i18n="skills.caveman.what.html">
-                      <strong>What it does:</strong> switches the agent into
-                      compressed communication mode while preserving
-                      correctness.
-                    </p>
-                    <p data-i18n="skills.caveman.constraint.html">
-                      <strong>Constraint:</strong> the mode persists until
-                      explicitly disabled.
-                    </p>
-                  </article>
-                  <article class="skill-card">
                     <h5>/handoff</h5>
                     <p data-i18n="skills.handoff.useWhen.html">
                       <strong>Use when:</strong> another session or agent must
@@ -2235,19 +2404,34 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                     </p>
                   </article>
                   <article class="skill-card">
-                    <h5>/write-a-skill</h5>
-                    <p data-i18n="skills.writeSkill.useWhen.html">
-                      <strong>Use when:</strong> you want to create a custom
-                      reusable skill.
+                    <h5>/to-questionnaire</h5>
+                    <p data-i18n="skills.questionnaire.useWhen.html">
+                      <strong>Use when:</strong> a decision is blocked by facts
+                      or preferences held by someone else.
                     </p>
-                    <p data-i18n="skills.writeSkill.what.html">
-                      <strong>What it does:</strong> gathers requirements,
-                      drafts the <code>SKILL.md</code>, and emphasizes clear
-                      trigger descriptions so the agent knows when to use it.
+                    <p data-i18n="skills.questionnaire.what.html">
+                      <strong>What it does:</strong> grills you about the send,
+                      then writes a focused Markdown questionnaire for that
+                      person to answer asynchronously.
                     </p>
-                    <p data-i18n="skills.writeSkill.constraint.html">
-                      <strong>Constraint:</strong> vague descriptions make the
-                      skill hard to trigger accurately.
+                    <p data-i18n="skills.questionnaire.constraint.html">
+                      <strong>Constraint:</strong> questions target the missing
+                      decision input, not generic discovery.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>/wait-what</h5>
+                    <p data-i18n="skills.waitWhat.useWhen.html">
+                      <strong>Use when:</strong> the agent's last message did not
+                      land.
+                    </p>
+                    <p data-i18n="skills.waitWhat.what.html">
+                      <strong>What it does:</strong> re-pitches the same point in
+                      plain English with missing context and repo vocabulary.
+                    </p>
+                    <p data-i18n="skills.waitWhat.constraint.html">
+                      <strong>Constraint:</strong> corrective, not a substitute
+                      for building shared language up front.
                     </p>
                   </article>
                   <article class="skill-card">
@@ -2271,49 +2455,108 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                       resources.
                     </p>
                   </article>
+                  <article class="skill-card">
+                    <h5>writing-for-agents <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.writingGreatSkills.useWhen.html">
+                      <strong>Use when:</strong> creating or editing a skill,
+                      <code>AGENTS.md</code>, <code>CLAUDE.md</code>, or any doc
+                      an agent reaches through a pointer.
+                    </p>
+                    <p data-i18n="skills.writingGreatSkills.what.html">
+                      <strong>What it does:</strong> makes agent-facing docs
+                      scannable, explicit, and progressively disclosed.
+                    </p>
+                    <p data-i18n="skills.writingGreatSkills.constraint.html">
+                      <strong>Constraint:</strong> optimize for agent retrieval
+                      and action, not essay-style reading.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>grilling <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.grilling.useWhen.html">
+                      <strong>Use when:</strong> another workflow needs its
+                      reusable one-question-at-a-time interview primitive.
+                    </p>
+                    <p data-i18n="skills.grilling.what.html">
+                      <strong>What it does:</strong> separates facts the agent
+                      can discover from decisions only the user can make.
+                    </p>
+                    <p data-i18n="skills.grilling.constraint.html">
+                      <strong>Constraint:</strong> normally invoked under
+                      grill, triage, wayfinder, or architecture flows.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>domain-modeling <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.domainModeling.useWhen.html">
+                      <strong>Use when:</strong> pinning down domain terminology,
+                      recording an architectural decision, or building the
+                      ubiquitous language for the project.
+                    </p>
+                    <p data-i18n="skills.domainModeling.what.html">
+                      <strong>What it does:</strong> actively builds and
+                      sharpens the domain model — challenges terms, invents
+                      edge-case scenarios, and writes the glossary and decisions
+                      into <code>CONTEXT.md</code> and ADRs as they crystallise.
+                    </p>
+                    <p data-i18n="skills.domainModeling.constraint.html">
+                      <strong>Constraint:</strong> for changing the model, not
+                      just reading it.
+                    </p>
+                  </article>
+                  <article class="skill-card">
+                    <h5>codebase-design <em>(model-invoked)</em></h5>
+                    <p data-i18n="skills.codebaseDesign.useWhen.html">
+                      <strong>Use when:</strong> designing or improving a
+                      module's interface, deciding where a seam goes, or making
+                      code more testable and AI-navigable.
+                    </p>
+                    <p data-i18n="skills.codebaseDesign.what.html">
+                      <strong>What it does:</strong> provides shared vocabulary
+                      for designing deep modules — a lot of behaviour behind a
+                      small interface, placed at a clean seam.
+                    </p>
+                    <p data-i18n="skills.codebaseDesign.constraint.html">
+                      <strong>Constraint:</strong> uses specific terminology
+                      (module, seam, interface) — don't substitute "component"
+                      or "service".
+                    </p>
+                  </article>
                 </div>
               </div>
 
               <div class="catalog-group">
-                <h4 data-i18n="skills.personal.heading">Personal Skills</h4>
-                <p data-i18n="skills.personal.intro">
-                  Writing and knowledge-management skills tuned for personal
-                  workflows.
+                <h4 data-i18n="skills.external.heading">External / Community Skills</h4>
+                <p data-i18n="skills.external.intro">
+                  Skills not in the mattpocock/skills pack — installed
+                  separately. Install with
+                  <code>npx skills@latest add &lt;repo&gt;</code>.
                 </p>
                 <div class="catalog-grid">
                   <article class="skill-card">
-                    <h5>/edit-article</h5>
-                    <p data-i18n="skills.editArticle.useWhen.html">
-                      <strong>Use when:</strong> you have an article draft that
-                      needs restructuring or prose tightening.
+                    <h5>/caveman</h5>
+                    <p data-i18n="skills.cavemanExt.source.html">
+                      <strong>Source:</strong>
+                      <a
+                        href="https://github.com/JuliusBrussee/caveman"
+                        target="_blank"
+                        rel="noreferrer"
+                        >JuliusBrussee/caveman</a
+                      >
                     </p>
-                    <p data-i18n="skills.editArticle.what.html">
-                      <strong>What it does:</strong> splits the article into
-                      sections, confirms the structure as a dependency-ordered
-                      flow, then rewrites each section for clarity with a
-                      paragraph-length budget.
+                    <p data-i18n="skills.cavemanExt.useWhen.html">
+                      <strong>Use when:</strong> you want low-token, terse
+                      responses during pairing or rapid iteration.
                     </p>
-                    <p data-i18n="skills.editArticle.constraint.html">
-                      <strong>Constraint:</strong> works section-by-section with
-                      check-ins, not as a single one-shot rewrite.
+                    <p data-i18n="skills.cavemanExt.what.html">
+                      <strong>What it does:</strong> ~65% output token reduction
+                      across multiple compression levels. Drops filler words and
+                      articles while preserving full technical accuracy.
+                      Persists until disabled.
                     </p>
-                  </article>
-                  <article class="skill-card">
-                    <h5>/obsidian-vault</h5>
-                    <p data-i18n="skills.obsidian.useWhen.html">
-                      <strong>Use when:</strong> you want to find, create, or
-                      organize notes inside your Obsidian vault.
-                    </p>
-                    <p data-i18n="skills.obsidian.what.html">
-                      <strong>What it does:</strong> searches the vault, writes
-                      flat title-case notes, and keeps things connected through
-                      <code>[[wikilinks]]</code> and index notes rather than
-                      folder hierarchies.
-                    </p>
-                    <p data-i18n="skills.obsidian.constraint.html">
-                      <strong>Constraint:</strong> assumes the vault path and
-                      naming conventions configured in the skill — adjust if
-                      yours differ.
+                    <p data-i18n="skills.cavemanExt.install.html">
+                      <strong>Install:</strong>
+                      <code>npx skills@latest add JuliusBrussee/caveman</code>
                     </p>
                   </article>
                 </div>
@@ -2397,7 +2640,13 @@ Use /handoff so the next agent can pick this up without losing context.</pre
 
           <footer class="footer">
             <p data-i18n="footer.sources.html">
-              Source material used for this guide:
+              Source material used for this guide (synced to
+              <a
+                href="https://github.com/mattpocock/skills/commit/6654f6b60cd9d5be8b54c6fafe44346dabeb3b76"
+                target="_blank"
+                rel="noreferrer"
+                >mattpocock/skills@6654f6b</a
+              >, 2026-08-24):
               <a
                 href="https://github.com/mattpocock/skills"
                 target="_blank"
@@ -2411,10 +2660,22 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                 >tdd</a
               >,
               <a
-                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/diagnose/SKILL.md"
+                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/diagnosing-bugs/SKILL.md"
                 target="_blank"
                 rel="noreferrer"
-                >diagnose</a
+                >diagnosing-bugs</a
+              >,
+              <a
+                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/ask-matt/SKILL.md"
+                target="_blank"
+                rel="noreferrer"
+                >ask-matt</a
+              >,
+              <a
+                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/implement/SKILL.md"
+                target="_blank"
+                rel="noreferrer"
+                >implement</a
               >,
               <a
                 href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/prototype/SKILL.md"
@@ -2429,28 +2690,22 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                 >grill-with-docs</a
               >,
               <a
-                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/to-prd/SKILL.md"
+                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/to-spec/SKILL.md"
                 target="_blank"
                 rel="noreferrer"
-                >to-prd</a
+                >to-spec</a
               >,
               <a
-                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/to-issues/SKILL.md"
+                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/to-tickets/SKILL.md"
                 target="_blank"
                 rel="noreferrer"
-                >to-issues</a
+                >to-tickets</a
               >,
               <a
                 href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/setup-matt-pocock-skills/SKILL.md"
                 target="_blank"
                 rel="noreferrer"
                 >setup</a
-              >,
-              <a
-                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/zoom-out/SKILL.md"
-                target="_blank"
-                rel="noreferrer"
-                >zoom-out</a
               >,
               <a
                 href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/engineering/improve-codebase-architecture/SKILL.md"
@@ -2465,12 +2720,6 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                 >grill-me</a
               >,
               <a
-                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/productivity/caveman/SKILL.md"
-                target="_blank"
-                rel="noreferrer"
-                >caveman</a
-              >,
-              <a
                 href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/productivity/handoff/SKILL.md"
                 target="_blank"
                 rel="noreferrer"
@@ -2482,23 +2731,18 @@ Use /handoff so the next agent can pick this up without losing context.</pre
                 rel="noreferrer"
                 >teach</a
               >,
+              and
               <a
-                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/personal/edit-article/SKILL.md"
+                href="https://github.com/JuliusBrussee/caveman"
                 target="_blank"
                 rel="noreferrer"
-                >edit-article</a
-              >, and
-              <a
-                href="https://raw.githubusercontent.com/mattpocock/skills/main/skills/personal/obsidian-vault/SKILL.md"
-                target="_blank"
-                rel="noreferrer"
-                >obsidian-vault</a
+                >JuliusBrussee/caveman</a
               >, plus skill summaries from the repo
               <a
-                href="https://github.com/mattpocock/skills#available-skills"
+                href="https://github.com/mattpocock/skills#reference"
                 target="_blank"
                 rel="noreferrer"
-                >available skills list</a
+                >current reference</a
               >.
             </p>
           </footer>
@@ -2513,9 +2757,9 @@ Use /handoff so the next agent can pick this up without losing context.</pre
           if (!target) return;
 
           const text = target.textContent || "";
+          const previous = button.textContent;
           try {
             await navigator.clipboard.writeText(text);
-            const previous = button.textContent;
             button.textContent = "Copied";
             window.setTimeout(() => {
               button.textContent = previous;
@@ -2523,7 +2767,7 @@ Use /handoff so the next agent can pick this up without losing context.</pre
           } catch {
             button.textContent = "Failed";
             window.setTimeout(() => {
-              button.textContent = "Copy";
+              button.textContent = previous;
             }, 1400);
           }
         });
