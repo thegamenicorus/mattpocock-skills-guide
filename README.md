@@ -1,6 +1,8 @@
 # Matt Pocock Skills: Daily Developer Guide
 
-A single-page guide explaining how to put Matt Pocock's Claude Code skills to work in everyday development — covering use cases, the mental model behind the skills, caveats to watch for, and a "Start Here" path for new users.
+A bilingual single-page guide explaining how to put Matt Pocock's agent skills to work in everyday development — installation, use-case recipes, copyable prompts, simulated sessions, caveats, and a complete stable-skill reference.
+
+Guide content is synced to [`mattpocock/skills@6654f6b`](https://github.com/mattpocock/skills/commit/6654f6b60cd9d5be8b54c6fafe44346dabeb3b76) (2026-08-24). Experimental `skills/in-progress/` entries are intentionally excluded.
 
 ## Live site
 
